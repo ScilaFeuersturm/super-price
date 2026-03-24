@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model StoreChain {
+  id            String   @id @default(cuid())
+  name          String
+  sepaComercioId String?
+  sepaBanderaId  String?
+  stores        Store[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([sepaComercioId, sepaBanderaId])
+}
+
+model Store {
+  id           String      @id @default(cuid())
+  chainId      String
+  sepaStoreId  String?
+  name         String
+  address      String?
+  city         String?
+  province     String?
+  latitude     Float?
+  longitude    Float?
+  chain        StoreChain  @relation(fields: [chainId], references: [id], onDelete: Cascade)
+  prices       Price[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([sepaStoreId])
+}
+
+model Product {
+  id             String   @id @default(cuid())
+  sepaProductId  String?  @unique
+  normalizedKey  String   @unique
+  name           String
+  normalizedName String   @default("")
+  brand          String?
+  category       String?
+  unit           String?
+  prices         Price[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([normalizedName])
+}
+
+model Price {
+  id          String   @id @default(cuid())
+  productId   String
+  storeId     String
+  amount      Decimal  @db.Decimal(10, 2)
+  currency    String   @default("ARS")
+  capturedAt  DateTime
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@index([productId])
+  @@index([storeId])
+  @@index([capturedAt])
+}
+
+model ShoppingList {
+  id         String             @id @default(cuid())
+  name       String
+  items      ShoppingListItem[]
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+}
+
+model ShoppingListItem {
+  id             String       @id @default(cuid())
+  shoppingListId String
+  productName    String
+  quantity       Int          @default(1)
+  shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+}
+
+model ImportRun {
+  id           String   @id @default(cuid())
+  source       String
+  importedDate DateTime
+  notes        String?
+  createdAt    DateTime @default(now())
+}

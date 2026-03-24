@@ -1,0 +1,41 @@
+{
+  "name": "super-price-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "seed": "tsx prisma/seed.ts",
+    "import:sepa": "tsx src/scripts/import-sepa.ts",
+    "import:sepa:folder": "tsx src/scripts/import-sepa-folder.ts",
+    "backfill:product-key": "tsx src/scripts/backfill-product-normalized-key.ts",
+    "check:product-key-duplicates": "tsx src/scripts/check-product-key-duplicates.ts",
+    "merge:duplicate-products": "tsx src/scripts/merge-duplicated-products.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^11.2.0",
+    "@fastify/swagger": "^9.7.0",
+    "@fastify/swagger-ui": "^5.2.5",
+    "@prisma/client": "^6.19.2",
+    "adm-zip": "^0.5.16",
+    "csv-parse": "^6.2.1",
+    "dotenv": "^17.3.1",
+    "fastify": "^5.8.4",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.8",
+    "@types/node": "^25.5.0",
+    "prisma": "^6.19.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  }
+}
