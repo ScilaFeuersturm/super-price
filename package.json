@@ -15,7 +15,8 @@
     "import:sepa:folder": "tsx src/scripts/import-sepa-folder.ts",
     "backfill:product-key": "tsx src/scripts/backfill-product-normalized-key.ts",
     "check:product-key-duplicates": "tsx src/scripts/check-product-key-duplicates.ts",
-    "merge:duplicate-products": "tsx src/scripts/merge-duplicated-products.ts"
+    "merge:duplicate-products": "tsx src/scripts/merge-duplicated-products.ts",
+    "import:auto": "tsx src/scripts/import-auto.ts"
   },
   "keywords": [],
   "author": "",
@@ -29,11 +30,13 @@
     "csv-parse": "^6.2.1",
     "dotenv": "^17.3.1",
     "fastify": "^5.8.4",
+    "node-cron": "^4.2.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.8",
     "@types/node": "^25.5.0",
+    "@types/node-cron": "^3.0.11",
     "prisma": "^6.19.2",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2"
