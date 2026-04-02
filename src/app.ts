@@ -19,7 +19,11 @@ export async function buildApp() {
   });
 
   await app.register(cors, {
-    origin: true
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   await registerSwagger(app);
