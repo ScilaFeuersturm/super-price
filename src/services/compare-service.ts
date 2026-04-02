@@ -10,7 +10,21 @@ type CompareInput = {
   items: CompareItem[];
   city?: string;
   chainIds?: string[];
+  lat?: number;
+  lng?: number;
+  radiusKm?: number;
 };
+
+function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
 
 type MatchedItem = {
   requestedName: string;
@@ -40,7 +54,10 @@ function getLatestPricesByProduct<T extends { productId: string; capturedAt: Dat
 }
 
 export async function compareShoppingItems(input: CompareInput) {
-  const stores = await prisma.store.findMany({
+  const useLocationFilter =
+    input.lat !== undefined && input.lng !== undefined && input.radiusKm !== undefined;
+
+  const allStores = await prisma.store.findMany({
     where: {
       ...(input.city
         ? {
@@ -70,6 +87,16 @@ export async function compareShoppingItems(input: CompareInput) {
       }
     }
   });
+
+  const stores = useLocationFilter
+    ? allStores.filter((store) => {
+        if (store.latitude == null || store.longitude == null) return false;
+        return (
+          haversineKm(input.lat!, input.lng!, Number(store.latitude), Number(store.longitude)) <=
+          input.radiusKm!
+        );
+      })
+    : allStores;
 
   const options = stores.map((store) => {
     let total = 0;

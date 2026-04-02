@@ -13,7 +13,10 @@ const compareSchema = z.object({
     )
     .min(1),
   city: z.string().optional(),
-  chainIds: z.array(z.string().min(1)).optional()
+  chainIds: z.array(z.string().min(1)).optional(),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
+  radiusKm: z.number().positive().optional(),
 });
 
 export async function compareRoutes(app: FastifyInstance) {
@@ -137,7 +140,10 @@ export async function compareRoutes(app: FastifyInstance) {
       return compareShoppingItems({
         items: body.items,
         city: body.city,
-        chainIds: body.chainIds
+        chainIds: body.chainIds,
+        lat: body.lat,
+        lng: body.lng,
+        radiusKm: body.radiusKm,
       });
     }
   );
