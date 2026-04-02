@@ -8,6 +8,7 @@ import { productRoutes } from "./routes/products.js";
 import { storeRoutes } from "./routes/stores.js";
 import { chainRoutes } from "./routes/chains.js";
 import { statsRoutes } from "./routes/stats.js";
+import { adminRoutes } from "./routes/admin.js";
 import { registerSwagger } from "./plugins/swagger.js";
 
 
@@ -60,6 +61,7 @@ await app.register(statsRoutes, {
   });
 
   await app.register(healthRoutes, { prefix: "/health" });
+  await app.register(adminRoutes, { prefix: "/admin" });
   await app.register(shoppingListRoutes, { prefix: "/shopping-lists" });
 
   return app;

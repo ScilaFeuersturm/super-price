@@ -5,6 +5,63 @@ import { normalizeText } from "../utils/normalize.js";
 import { scoreProductMatch } from "../utils/product-matching.js";
 
 export async function productRoutes(app: FastifyInstance) {
+  // Devuelve todos los nombres de productos para caché local en el cliente.
+  // Usar limit alto (hasta 1000) y paginar hasta totalPages.
+  app.get(
+    "/names",
+    {
+      schema: {
+        tags: ["Products"],
+        summary: "Listar nombres de productos para caché",
+        querystring: {
+          type: "object",
+          properties: {
+            page:  { type: "integer", minimum: 1, default: 1 },
+            limit: { type: "integer", minimum: 1, maximum: 1000, default: 500 },
+          },
+        },
+        response: {
+          200: {
+            type: "object",
+            properties: {
+              page:       { type: "integer" },
+              limit:      { type: "integer" },
+              total:      { type: "integer" },
+              totalPages: { type: "integer" },
+              names:      { type: "array", items: { type: "string" } },
+            },
+          },
+        },
+      },
+    },
+    async (request) => {
+      const querySchema = z.object({
+        page:  z.coerce.number().int().positive().default(1),
+        limit: z.coerce.number().int().positive().max(1000).default(500),
+      });
+      const { page, limit } = querySchema.parse(request.query);
+      const skip = (page - 1) * limit;
+
+      const [total, products] = await Promise.all([
+        prisma.product.count(),
+        prisma.product.findMany({
+          select: { name: true },
+          orderBy: { name: "asc" },
+          skip,
+          take: limit,
+        }),
+      ]);
+
+      return {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        names: products.map((p) => p.name),
+      };
+    }
+  );
+
   app.get(
     "/search",
     {
